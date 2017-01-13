@@ -13,18 +13,22 @@ wlan.active(True)
 
 def do_connect(ssid, password):
     start = time.ticks_ms()
-    if not wlan.isconnected():
-        print('connecting to network...')
-        wlan.connect(ssid, password)
-        while not wlan.isconnected():
-            if time.ticks_diff(time.ticks_ms(), start) > 30000:
-                print('failed to connect to {}'.format(ssid))
-                break
+    if wlan.isconnected():
+        print('disconnecting from network...')
+        wlan.disconnect()
+    print('connecting to network...')
+    wlan.connect(ssid, password)
+    while not wlan.isconnected():
+        if time.ticks_diff(time.ticks_ms(), start) > 30000:
+            print('failed to connect to {}'.format(ssid))
+            break
     print('network config:', wlan.ifconfig())
 
 
-#ap = network.WLAN(network.AP_IF) # create access-point interface
-#ap.active(True)         # activate the interface
-#ap.config(essid='ESP-AP') # set the ESSID of the access point
+def wifi_scan():
+    scan = sorted(wlan.scan(), key=lambda x: x[3], reverse=True)
+    for essid, bssid, channel, rssi, authmode, hidden in scan:
+        print('essid={} dB={}'.format(essid.decode(), rssi))
+
 
 gc.collect()
