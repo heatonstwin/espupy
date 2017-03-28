@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sensors</title>
+</head>
+<body>
+
+    <ul>
+    {% for sensor in object_list %}
+        <li>{{sensor}}</li>
+    {% empty %}
+        <li>No sensors yet.</li>
+    {% endfor %}
+    </ul>
+
+</body>
+</html>
