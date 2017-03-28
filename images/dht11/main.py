@@ -6,10 +6,16 @@ import network
 import sodrequests
 import ujson
 
-from iot.micropython.utilities import pretty_mac
+from utilities import pretty_mac
+import config
 
-HOST = '192.168.0.5:8000'
-URL = 'http://' + HOST
+HOST = config.CONFIG['server']
+port = config.CONFIG['port']
+
+if port:
+    HOST += ':{}'.format(port)
+
+URL = 'http://{}'.format(HOST)
 
 
 def fahrenheit(temp):
