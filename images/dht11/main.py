@@ -32,7 +32,7 @@ def setup():
     headers['Cookie'] = cookie
 
     csrf = {'csrfmiddlewaretoken': cookie.split('=')[1]}
-    login = {'username': 'steve', 'password': 'blue1234'}
+    login = {'username': config.CONFIG['server_user'], 'password': config.CONFIG['server_pass']}
     login.update(csrf)
     response = sodrequests.post('{}/admin/login/'.format(URL), data=login, headers=headers)
 

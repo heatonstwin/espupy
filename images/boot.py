@@ -9,11 +9,11 @@ esp.osdebug(None)
 
 import gc
 import ujson
-import network
 import webrepl
 
 
-"""
+webrepl.start()
+
 try:
     os.stat('config.json')
 except OSError:
@@ -22,9 +22,6 @@ except OSError:
 with open('config.json', 'r') as file:
     config.CONFIG = ujson.load(file)
 
+do_connect(config.CONFIG['ssid'], config.CONFIG['password'])
 
-"""
-#do_connect(config.CONFIG['ssid'], config.CONFIG['password'])
-
-webrepl.start()
 gc.collect()

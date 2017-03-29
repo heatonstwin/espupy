@@ -1,6 +1,7 @@
+import time
 import ujson
 import socket
-import machine
+import network
 
 
 # HTML to send to browsers
@@ -13,6 +14,8 @@ SSID (required): <input type="text" name="ssid"><br>
 Password (required): <input type="text" name="password"><br>
 Portal Server (required): <input type="text" name="server"><br>
 Portal Port (optional): <input type="text" name="port"><br>
+Portal Username (required): <input type="text" name="server_user"><br>
+Portal Password (required): <input type="text" name="server_pass"><br>
 Location (required): <input type="text" name="location"><br>
 Sensor Type (required):
  <select name="sensor_type">
@@ -23,17 +26,25 @@ Sensor Type (required):
 </html>
 """
 
-REQUIRED_FIELDS = ['ssid', 'password', 'server', 'location', 'sensor_type']
-
-
-# Setup Socket WebServer
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.bind(('', 80))
-sock.listen(5)
+REQUIRED_FIELDS = [
+    'ssid',
+    'password',
+    'server',
+    'server_user',
+    'server_pass',
+    'location',
+    'sensor_type'
+]
 
 
 def serve():
-    exit = False
+    ap_if = network.WLAN(network.AP_IF)
+    addr = socket.getaddrinfo(ap_if.ifconfig()[0], 80)[0][-1]
+    sock = socket.socket()
+    sock.bind(addr)
+    sock.listen(5)
+    print('listening on', addr)
+    _exit = False
     while True:
         response = html.format(heading='Edit Configuration')
         conn, addr = sock.accept()
@@ -55,7 +66,7 @@ def serve():
             if not all(data[field] for field in REQUIRED_FIELDS):
                 response = html.format(heading='You must enter all required fields')
             else:
-                exit = True
+                _exit = True
                 with open('config.json', 'w') as f:
                     f.write(ujson.dumps(data))
                 response = ('<!DOCTYPE html>'
@@ -65,5 +76,7 @@ def serve():
                             '</html>').format(ssid=data['ssid'])
         conn.send(response)
         conn.close()
-        if exit is True:
-            return
+        if _exit is True:
+            time.sleep_ms(2000)
+            sock.close()
+            break

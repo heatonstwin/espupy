@@ -6,8 +6,8 @@ import ubinascii
 import webserver
 
 
-def pretty_mac():
-    return ubinascii.hexlify(network.WLAN().config('mac')).decode()
+def pretty_mac(sep=':'):
+    return ubinascii.hexlify(network.WLAN().config('mac'), sep).decode()
 
 
 def do_connect(ssid, password):
@@ -40,10 +40,13 @@ def wifi_scan():
 
 
 def get_config():
+    sta_if = network.WLAN(network.STA_IF)
+    sta_if.active(False)
+
     ap_if = network.WLAN(network.AP_IF)
     ap_if.active(True)
 
-    mac = pretty_mac()[-6:]
+    mac = pretty_mac(sep='')[-6:]
     essid = 'minibox-{}'.format(mac)
     password = 'senseit0'
     ap_if.config(essid=essid,
