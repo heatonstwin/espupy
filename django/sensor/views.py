@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import model_to_dict
 from django.http import HttpResponseNotFound
@@ -40,7 +42,15 @@ class SensorReadingCreateView(CreateView):
 
         sensor = Sensor.objects.get(id=payload.pop('sensor'))
         reading = SensorReading.objects.create(sensor=sensor, **payload)
-        respose = JsonResponse({'reading': model_to_dict(reading)})
+
+        next_reading = reading.timestamp + datetime.timedelta(seconds=sensor.poll_rate)
+        sensor.next_reading=next_reading
+        sensor.save()
+
+        respose = JsonResponse({
+            'reading': model_to_dict(reading),
+            'sleep': (next_reading - reading.timestamp).total_seconds()
+        })
         return respose
 
 

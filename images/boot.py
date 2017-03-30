@@ -3,7 +3,8 @@ import os
 import esp
 
 import config
-from utilities import do_connect, get_config
+import time
+from utilities import get_config
 
 esp.osdebug(None)
 
@@ -12,6 +13,7 @@ import ujson
 import webrepl
 
 
+config.STARTUP_TIME = time.ticks_ms()
 webrepl.start()
 
 try:
@@ -21,7 +23,5 @@ except OSError:
 
 with open('config.json', 'r') as file:
     config.CONFIG = ujson.load(file)
-
-do_connect(config.CONFIG['ssid'], config.CONFIG['password'])
 
 gc.collect()

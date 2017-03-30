@@ -35,6 +35,7 @@ class Sensor(models.Model):
     device = models.ForeignKey(Device)
     location = models.CharField(max_length=128)
     poll_rate = models.IntegerField(default=60)
+    next_reading = models.DateTimeField()
 
     def __str__(self):
         return '{location} - {device} ({address})'.format(
