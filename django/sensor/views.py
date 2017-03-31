@@ -8,6 +8,7 @@ from django.views.generic import CreateView
 
 # Create your views here.
 from django.views.generic import DetailView
+from django.views.generic import ListView
 
 from .models import Sensor, Device, SensorReading
 
@@ -54,6 +55,17 @@ class SensorReadingCreateView(CreateView):
         return respose
 
 
+class SensorReadingListView(ListView):
+
+    model = SensorReading
+    paginate_by = 200
+
+    def get_queryset(self):
+        sensor_id = self.kwargs.get('pk')
+        readings = self.model.objects.filter(sensor_id=sensor_id)
+        return readings
+
+
 class SensorDetailView(DetailView):
 
     model = Sensor
@@ -61,3 +73,7 @@ class SensorDetailView(DetailView):
     def render_to_response(self, context, **response_kwargs):
         return JsonResponse({'sensor': model_to_dict(context['object'])})
 
+
+class SensorListView(ListView):
+
+    model = Sensor
