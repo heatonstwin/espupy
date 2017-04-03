@@ -10,6 +10,7 @@ from django.views.generic import CreateView
 from django.views.generic import DetailView
 from django.views.generic import ListView
 
+from utilities.views import ListViewChartMixin
 from .models import Sensor, Device, SensorReading
 
 
@@ -77,3 +78,29 @@ class SensorDetailView(DetailView):
 class SensorListView(ListView):
 
     model = Sensor
+
+
+class SensorReadingListChartView(ListViewChartMixin):
+
+    model = SensorReading
+    trace_type = 'Scatter'
+    trace_name_field = 'sensor__location'
+    trace_x_field = 'timestamp'
+    trace_y_field = 'measurement'
+    trace_options = {
+        'line': dict(width=1),
+        'mode': 'lines'
+    }
+    layout_title = 'DHT11 Measurements'
+    layout_x_axis_title = 'Timestamp'
+    layout_y_axis_title = 'Measurement (F)'
+
+    def get_queryset(self):
+        queryset = super(SensorReadingListChartView, self).get_queryset()
+        sensor_model = self.kwargs.get('model')
+        location = self.kwargs.get('location')
+        if location:
+            queryset = queryset.filter(
+                sensor__device__model=sensor_model,
+                sensor__location=location)
+        return queryset

@@ -16,13 +16,15 @@ Including another URLconf
 from django.conf.urls import url
 
 from .views import SensorCreateView, SensorReadingCreateView,\
-    SensorDetailView, SensorListView, SensorReadingListView
+    SensorDetailView, SensorListView, SensorReadingListChartView
 
 
 urlpatterns = [
     url(r'^register$', SensorCreateView.as_view(), name='sensor-create'),
     url(r'^sense$', SensorReadingCreateView.as_view(), name='sensor-sense'),
     url(r'^(?P<pk>\d+)$', SensorDetailView.as_view(), name='sensor-detail'),
-    url(r'^(?P<pk>\d+)/readings$', SensorReadingListView.as_view(), name='sensor-reading-list'),
+    url(r'^(?P<model>\w+)/readings/chart$', SensorReadingListChartView.as_view(), name='sensor-reading-list-chart'),
+    url(r'^(?P<model>\w+)/readings/location/(?P<location>[\w\W]+)/chart$', SensorReadingListChartView.as_view(), name='sensor-reading-list-chart'),
+    url(r'^readings/(?P<pk>\d+)$', SensorListView.as_view(), name='sensor-reading-list'),
     url(r'^list$', SensorListView.as_view(), name='sensor-list')
 ]
